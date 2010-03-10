@@ -1,0 +1,53 @@
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="MapWindow"
+   author="Soludra"
+   id="37859615f6c4f74b6872f8e6"
+   language="Lua"
+   purpose="Moves the MAP into a floating miniwindow"
+   save_state="y"
+   date_written="2009-04-11 21:52:18"
+   requires="4.40"
+   version="1.0"
+   >
+<description trim="y">
+<![CDATA[
+MapWindow v1.0
+By Soludra Ar'thela
+
+This plugin is best used alongside my ATCP plugin. Its messages allow
+the MapWindow to update every time you move, even by summons or other
+"nonstandard" means.
+
+Commands:
+MAP RADIUS <1-5>
+-> Sets the MAP radius, which affects the mapwindow size.
+-> MAP WIDTH and MAP HEIGHT also work as expected.
+
+MAP MOVE
+-> Displays the current map-window location
+
+MAP MOVE <x> <y>
+-> Positions the map window in a specific location on the screen.
+-> 0 0 is the top-left corner.
+
+MAP FONTSIZE <font size>
+-> Sets the size each symbol takes up.
+-> Default is 10. Is not yet saved between sessions.
+
+MAP PARSE
+-> Updates the map with MAP, gagging the output.
+-> You shouldn't need to use this yourself unless you
+-> don't have the ATCP plugin installed.
+
+]]>
+</description>
+
+</plugin>
+
+<include name="constants.lua"/>
+<include name="$PLUGINDIR\libraries\plugger.xml" />
+
+</muclient>

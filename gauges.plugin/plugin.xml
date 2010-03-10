@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE muclient>
+
+<muclient>
+<plugin
+   name="Gauges"
+   author="Soludra"
+   id="0860ccb8e0e747814da4d907"
+   language="Lua"
+   purpose="GUI Gauges for Achaea"
+   date_written="2010-02-02"
+   requires="4.43"
+   version="2.00"
+   >
+</plugin>
+
+<!--
+  #  Maintained and developed by Soludra
+  #  
+  #  Originally by Trevize
+  #  Images supplied by Dusty
+-->
+
+<include name="$PLUGINDIR\libraries\plugger.xml" />
+
+</muclient>

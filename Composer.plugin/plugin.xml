@@ -1,0 +1,18 @@
+<!DOCTYPE muclient> 
+ 
+<muclient> 
+<plugin
+   name="Composer"
+   author="Soludra"
+   id="f91663487b7b8f376ff92da9"
+   language="Lua"
+   purpose="Provides a Composer window for news, journals, etc."
+   date_written="2010-02-19"
+   requires="4.43"
+   version="1.0"
+   >
+</plugin>
+
+<include name="$PLUGINDIR\libraries\plugger.xml" />
+
+</muclient>

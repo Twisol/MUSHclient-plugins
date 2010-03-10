@@ -1,0 +1,18 @@
+<!DOCTYPE muclient> 
+ 
+<muclient> 
+<plugin
+   name="roomname"
+   author="Soludra"
+   id="e94f6bd8509a2b00d10cb226"
+   language="Lua"
+   purpose="Adds a Nexus room name to the status bar"
+   date_written="2008-08-23"
+   requires="4.35"
+   version="1.0"
+   >
+</plugin>
+
+<include name="$PLUGINDIR\libraries\plugger.xml" />
+
+</muclient>
