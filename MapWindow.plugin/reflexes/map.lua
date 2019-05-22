@@ -40,13 +40,40 @@ trigger["notmapped"] {
 }
 
 trigger["arealine"] {
-  match   = [[^\-+(?: Area (?:\d+): (?:.+?) )?\-+$]],
+  match   = [[^\-+ Area (?:\d+): (?:.+?) \-+$]],
   enabled = true,
   regexp  = true,
-  --group   = "mapbegin",
+  group   = "mapbegin",
   
   omit_from_log    = true,
   omit_from_output = true,
+  
+  send_to = 14,
+  send    = [[
+    EnableGroup("mapbegin", false)
+    EnableGroup("fail", false)
+    EnableGroup("parsemap", true)
+    --print("arealine")
+    grid = {}
+  ]],
+}
+trigger["arealine2"] {
+  match   = [[^\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-$]],
+  enabled = true,
+  regexp  = true,
+  group   = "mapbegin",
+  
+  omit_from_log    = true,
+  omit_from_output = true,
+  
+  send_to = 14,
+  send    = [[
+    EnableGroup("mapbegin", false)
+    EnableGroup("fail", false)
+    EnableGroup("parsemap", true)
+    --print("arealine")
+    grid = {}
+  ]],
 }
 
 trigger["maprows"] {
@@ -64,33 +91,47 @@ trigger["maprows"] {
 }
 
 trigger["coordline"] {
-  match   = [[^\-+(?: [A-Za-z'"\-_&, ]+ )?(?:\-+)?(?: -?\d+:-?\d+:-?\d+ )\-+$]],
+  match   = [[^\-+(?:[A-Za-z'"\-_&, ]+ )?(?:\-+)? -?\d+:-?\d+:-?\d+ \-+$]],
   enabled = true,
   regexp  = true,
-  --group   = "parsemap",
+  group   = "parsemap",
   
-  omit_from_log    = true,
-  omit_from_output = true,
-}
-
-trigger["prompt"] {
-  match   = [[^(?:\(p\) )?\d+h, (?:\d+m,? )?(?:\d+e,? )?(?:\d+w,? )?(?:\d{1,3}%,? )?(?:\d+R )?c?e?x?k?d?b?@?(?: Vote)?-$]],
-  enabled = false,
-  regexp  = true,
-  
+	sequence = 100,
   omit_from_log    = true,
   omit_from_output = true,
   
   send_to = 14,
   send    = [[
-    EnableTrigger("prompt", false)
-    EnableGroup("begin", false)
+	  --print("coordline")
+    EnableGroup("parsemap", false)
+    --EnableGroup("mapbegin", true)
+    --EnableTrigger("prompt", true)
+    map:ClearGrid()
+    map:DrawGrid(grid)
+  ]],
+}
+
+trigger["prompt"] {
+  match   = [[^.+$]],
+  enabled = true,
+  regexp  = true,
+  
+  send_to = 12,
+  send    = [[
+	  --print("prompt")
+		local count=GetLineCount()
+		if count == GetInfo(289) then
+			EnableTrigger("prompt", false)
+			EnableGroup("mapbegin", true)
+			EnableGroup("parsemap",false)
     
-    mapping = false
-    if not gagging then
-      gagging = true
-      GagOption(true)
-    end
+			mapping = false
+			if not gagging then
+				gagging = true
+				GagOption(true)
+			end
+			--GagLines()
+		end
   ]],
 }
 
