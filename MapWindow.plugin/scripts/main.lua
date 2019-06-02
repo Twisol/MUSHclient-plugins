@@ -1,11 +1,10 @@
+-- Used to load the ATCP/GMCP interface
+local PPI = require("ppi")
+
 -- Simple window class used by the map
 Window = require("scripts.window")
 
--- Used to load the ATCP interface
-PPI = require("libraries.ppi")
-
--- Will contain the ATCP interface
-atcp = nil
+--require "gmcphelper"
 
  
 -- translate MAP markers
@@ -29,22 +28,25 @@ roomcolor = {["@"] = 0xFFFFFF, -- white
 -- otherwise, one or more MAPs wouldn't be gagged
 mapping = false
 
--- current room num
-current_room = nil
-
 -- tells the ending trigger whether to re-enable gagging
 -- This allows MAP to be parsed but still be shown, but
 -- MAP PARSE to be parsed without being shown
 gagging = true
 
+-- Executed when you get a GMCP message!
 
 OnPluginInstall = function()
+  print("installing mapwindow plugin")
   local x = GetVariable("x") or 0
   local y = GetVariable("y") or 0
   local width = GetVariable("width") or 5
   local height = GetVariable("height") or 5
  
   map = Window.new(GetPluginID(), x, y, width, height)
+	--[[PPI.OnLoad("29a4c0721bef6ae11c3e9a82", function(gmcp)
+	  print("registering listener")
+    gmcp.Listen("Redirect.Window", OnChangedRoom)
+  end)]]
 end
 
 OnPluginSaveState = function()
@@ -54,26 +56,51 @@ OnPluginSaveState = function()
   SetVariable("height", map.height)
 end
 
+-- (ID, on_success, on_failure)
+PPI.OnLoad("29a4c0721bef6ae11c3e9a82", function(gmcp)
+  gmcp.Listen("Redirect.Window", OnChangedRoom)
+	end,
+	function(reason)
+    Note("GMCP interface unavailable: ", reason)
+end)
 
--- Executed when you get an ATCP message!
-OnRoomNum = function(message, content)
-  local next_room = tonumber(content)
-  if current_room ~= next_room then
-    current_room = next_room
-    Execute("map parse")
+--Listen("Room.Info", OnChangedRoom)
+--testGMCP()
+OnChangedRoom = function(message, content)
+	--print("room changed")
+  if content==nil then
+	return
   end
+  window_redirect = content
+  if window_redirect=="map" then
+    if mapping then
+	    return
+    end
+    mapping = true
+	  grid={}
+    
+    --EnableGroup("parsemap", true)
+		--print("enabling mapbegin")
+		EnableGroup("mapbegin", true)
+  elseif window_redirect=="main" then
+    mapping=false
+		EnableGroup("mapbegin",false)
+	  --EnableGroup("parsemap", false)
+		EnableTrigger("coordline", true)
+		EnableTrigger("prompt",true)
+	  map:ClearGrid()
+    map:DrawGrid(grid)
+  end
+    --SendNoEcho("map")
 end
 
--- Loads the ATCP library
+-- (ID, on_success, on_failure)
+PPI.OnLoad("7c08e2961c5e20e5bdbf7fc5", function(atcp)
+  atcp.Listen("Room.Num", OnChangedRoom)
+end)
+
 OnPluginListChanged = function()
-  local atcp, reloaded = PPI.Load("7c08e2961c5e20e5bdbf7fc5")
-  if not atcp then
-    -- Doesn't really matter - it won't do anything
-  elseif reloaded then
-    -- Registers a function to call when Client.Compose is received.
-    atcp.Listen("Room.Num", OnRoomNum)
-    _G.atcp = atcp
-  end
+  PPI.Refresh()
 end
  
 GagOption = function(bool)
@@ -81,7 +108,7 @@ GagOption = function(bool)
   
   local names = {
     "notmapped", "maprows",
-    "coordline", "prompt",
+    "coordline",
     "arealine" , "fail",
   }
   
@@ -111,7 +138,7 @@ commands = {
     Note("Current location: (" .. map.x .. ", " .. map.y .. ")")
   end,
   ["^move%s+(%d+)%s+(%d+)$"] = function(line, x, y)
-    map:MoveWindow(tonumber(y), tonumber(y))
+    map:MoveWindow(tonumber(x), tonumber(y))
   end,
   ["^fontsize$"] = function(line)
     Note("Current font size: " .. map.fontsize)
@@ -120,14 +147,6 @@ commands = {
     map:FontSize(tonumber(size))
   end,
   ["^parse$"] = function(line)
-    if mapping then
-      return
-    end
-    mapping = true
-    
-    EnableGroup("mapbegin", true)
-    EnableGroup("fail", true)
-    
     SendNoEcho("map")
   end,
   ["^$"] = function(line)
@@ -194,5 +213,20 @@ ParseLine = function(name, line, matches, styles)
   table.insert(grid, row)
 end
 
+GagLines=function()
+  DeleteLines(1)
+end
+
+function OnPlugin_IAC_GA()
+	--EnableTrigger("prompt", false)
+	EnableGroup("mapbegin", true)
+	EnableGroup("parsemap",false)
+    
+	mapping = false
+	if not gagging then
+		gagging = true
+		GagOption(true)
+	end
+end
 
 require("reflexes.map")

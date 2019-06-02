@@ -17,7 +17,7 @@ trigger {
     EnableTrigger("mapsize", false)
     EnableGroup("fail", false)
     
-    EnableTrigger("prompt", true)
+    --EnableTrigger("prompt", true)
   ]],
 }
 
@@ -33,15 +33,15 @@ trigger["notmapped"] {
   send    = [[
     EnableGroup("mapbegin", false)
     EnableGroup("fail", false)
-    EnableTrigger("prompt", true)
+    --EnableTrigger("prompt", true)
     
     map:ClearGrid()
   ]],
 }
 
 trigger["arealine"] {
-  match   = [[^\-+(?: Area (?:\d+): (?:.+?) )?\-+$]],
-  enabled = false,
+  match   = [[^\-+ Area (?:\d+): (?:.+?) \-+$]],
+  enabled = true,
   regexp  = true,
   group   = "mapbegin",
   
@@ -53,7 +53,25 @@ trigger["arealine"] {
     EnableGroup("mapbegin", false)
     EnableGroup("fail", false)
     EnableGroup("parsemap", true)
-    
+    --print("arealine")
+    grid = {}
+  ]],
+}
+trigger["arealine2"] {
+  match   = [[^\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-$]],
+  enabled = true,
+  regexp  = true,
+  group   = "mapbegin",
+  
+  omit_from_log    = true,
+  omit_from_output = true,
+  
+  send_to = 14,
+  send    = [[
+    EnableGroup("mapbegin", false)
+    EnableGroup("fail", false)
+    EnableGroup("parsemap", true)
+    --print("arealine")
     grid = {}
   ]],
 }
@@ -66,48 +84,30 @@ trigger["maprows"] {
   
   script   = "ParseLine",
   sequence = 101,
-  
+ 
+
   omit_from_log    = true,
   omit_from_output = true,
 }
 
 trigger["coordline"] {
-  match   = [[^\-+(?: [A-Za-z'&quot;-_ ]+ )?(?:\-+)?(?: -?\d+:-?\d+:-?\d+ )\-+$]],
-  enabled = false,
+  match   = [[^\-+(?:[A-Za-z'"\-_&, ]+ )?(?:\-+)? -?\d+:-?\d+:-?\d+ \-+$]],
+  enabled = true,
   regexp  = true,
   group   = "parsemap",
   
+	sequence = 100,
   omit_from_log    = true,
   omit_from_output = true,
   
   send_to = 14,
   send    = [[
+	  --print("coordline")
     EnableGroup("parsemap", false)
-    EnableTrigger("prompt", true)
-    
+    --EnableGroup("mapbegin", true)
+    --EnableTrigger("prompt", true)
     map:ClearGrid()
     map:DrawGrid(grid)
-  ]],
-}
-
-trigger["prompt"] {
-  match   = [[^(?:\(p\) )?(?:\d+h, )?(?:\d+m,? )?(?:\d+e,? )?(?:\d+w,? )?(?:\d{1,3}%,? )?c?e?x?k?d?b?@? ?(?:Vote)?-]],
-  enabled = false,
-  regexp  = true,
-  
-  omit_from_log    = true,
-  omit_from_output = true,
-  
-  send_to = 14,
-  send    = [[
-    EnableTrigger("prompt", false)
-    EnableGroup("begin", false)
-    
-    mapping = false
-    if not gagging then
-      gagging = true
-      GagOption(true)
-    end
   ]],
 }
 
@@ -132,19 +132,15 @@ trigger {
 
 
 alias {
-  match  = [[^\s*MAP(?:\s+(.+?))?\s*$]],
+  match  = [[^\s*map(?:\s+(.+?))?\s*$]],
   regexp = true,
-  
-  ignore_case = true,
   
   script = "MapAlias",
 }
 
 alias {
-  match = [[\s*map\s+help\s*$]],
+  match = [[^\s*map\s+help\s*$]],
   regexp = true,
-  
-  ignore_case = true,
   
   send_to = 12,
   send    = [[
