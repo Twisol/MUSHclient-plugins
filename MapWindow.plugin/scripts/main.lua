@@ -217,5 +217,16 @@ GagLines=function()
   DeleteLines(1)
 end
 
+function OnPlugin_IAC_GA()
+	--EnableTrigger("prompt", false)
+	EnableGroup("mapbegin", true)
+	EnableGroup("parsemap",false)
+    
+	mapping = false
+	if not gagging then
+		gagging = true
+		GagOption(true)
+	end
+end
 
 require("reflexes.map")

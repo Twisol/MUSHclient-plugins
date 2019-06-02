@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Komodo Project File - DO NOT EDIT -->
+<project id="c2e114d9-4094-46bd-a991-434c18af2341" kpf_version="4" name="MapWindow">
+<preference-set idref="c2e114d9-4094-46bd-a991-434c18af2341">
+  <boolean id="import_live">1</boolean>
+</preference-set>
+</project>

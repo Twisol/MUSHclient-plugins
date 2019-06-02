@@ -17,7 +17,7 @@ trigger {
     EnableTrigger("mapsize", false)
     EnableGroup("fail", false)
     
-    EnableTrigger("prompt", true)
+    --EnableTrigger("prompt", true)
   ]],
 }
 
@@ -33,7 +33,7 @@ trigger["notmapped"] {
   send    = [[
     EnableGroup("mapbegin", false)
     EnableGroup("fail", false)
-    EnableTrigger("prompt", true)
+    --EnableTrigger("prompt", true)
     
     map:ClearGrid()
   ]],
@@ -108,30 +108,6 @@ trigger["coordline"] {
     --EnableTrigger("prompt", true)
     map:ClearGrid()
     map:DrawGrid(grid)
-  ]],
-}
-
-trigger["prompt"] {
-  match   = [[^.+$]],
-  enabled = true,
-  regexp  = true,
-  
-  send_to = 12,
-  send    = [[
-	  --print("prompt")
-		local count=GetLineCount()
-		if count == GetInfo(289) then
-			EnableTrigger("prompt", false)
-			EnableGroup("mapbegin", true)
-			EnableGroup("parsemap",false)
-    
-			mapping = false
-			if not gagging then
-				gagging = true
-				GagOption(true)
-			end
-			--GagLines()
-		end
   ]],
 }
 
